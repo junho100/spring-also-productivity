@@ -27,6 +27,6 @@ public class AuthController {
             .userId(userId)
             .build();
         BaseResponse<SignUpResponse> response = baseResponseService.createSuccessResponse(signUpResponse);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }
