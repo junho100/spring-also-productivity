@@ -13,7 +13,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
-    public Boolean checkCategoryExistsByName(String categoryName) {
+    public Boolean checkCategoryExistsByName(String categoryName) { //TODO: boolean 원시타입으로 변경
         Optional<Category> category = categoryRepository.findByCategoryName(categoryName);
 
         if (!category.isPresent()) {

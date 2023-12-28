@@ -2,8 +2,12 @@ package com.junho.productmgnt.domains.auth;
 
 import com.junho.productmgnt.common.response.BaseResponse;
 import com.junho.productmgnt.common.response.BaseResponseService;
+import com.junho.productmgnt.domains.auth.model.command.SignInCommand;
 import com.junho.productmgnt.domains.auth.model.command.SignUpCommand;
+import com.junho.productmgnt.domains.auth.model.dto.SignInDto;
+import com.junho.productmgnt.domains.auth.model.request.SignInRequest;
 import com.junho.productmgnt.domains.auth.model.request.SignUpRequest;
+import com.junho.productmgnt.domains.auth.model.response.SignInResponse;
 import com.junho.productmgnt.domains.auth.model.response.SignUpResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,5 +32,18 @@ public class AuthController {
             .build();
         BaseResponse<SignUpResponse> response = baseResponseService.createSuccessResponse(signUpResponse);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/sign-in")
+    public ResponseEntity<BaseResponse<SignInResponse>> signIn(@RequestBody SignInRequest signInRequest) {
+        SignInCommand signInCommand = SignInCommand.of(signInRequest);
+        SignInDto signInDto = authService.signIn(signInCommand);
+
+        SignInResponse signInResponse = SignInResponse.builder()
+            .token(signInDto.getToken())
+            .userId(signInDto.getUserId())
+            .build();
+        BaseResponse<SignInResponse> response = baseResponseService.createSuccessResponse(signInResponse);
+        return new ResponseEntity<BaseResponse<SignInResponse>>(response, HttpStatus.CREATED);
     }
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
+@Builder //TODO: Response class 내 class 추가해보기
 public class GetProductDetailAudit {
     private Long auditId;
     private Long userId;

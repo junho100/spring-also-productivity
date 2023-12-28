@@ -2,6 +2,7 @@ package com.junho.productmgnt.domains.user;
 
 import com.junho.productmgnt.domains.user.entity.User;
 import com.junho.productmgnt.domains.user.model.command.CreateUserCommand;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,5 +22,15 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         return savedUser.getUserId();
+    }
+
+    public User getUserByEmail(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if (!user.isPresent()) {
+            return null; //TODO: add validation
+        }
+
+        return user.get();
     }
 }
