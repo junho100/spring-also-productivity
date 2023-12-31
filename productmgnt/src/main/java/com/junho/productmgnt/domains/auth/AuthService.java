@@ -1,5 +1,7 @@
 package com.junho.productmgnt.domains.auth;
 
+import com.junho.productmgnt.common.exception.BaseException;
+import com.junho.productmgnt.common.exception.BaseExceptionStatus;
 import com.junho.productmgnt.common.util.JwtProvider;
 import com.junho.productmgnt.domains.auth.model.command.SignInCommand;
 import com.junho.productmgnt.domains.auth.model.command.SignUpCommand;
@@ -31,7 +33,7 @@ public class AuthService {
         User user = userService.getUserByEmail(signInCommand.getEmail());
 
         if (!checkIsPasswordValid(signInCommand.getPassword(), user.getPasswordHash())) {
-            return null; //TODO: add validation
+            throw new BaseException(BaseExceptionStatus.SIGNIN_FAILED);
         }
 
         String token = jwtProvider.createToken(signInCommand.getEmail());

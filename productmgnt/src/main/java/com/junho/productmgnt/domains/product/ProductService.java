@@ -1,5 +1,7 @@
 package com.junho.productmgnt.domains.product;
 
+import com.junho.productmgnt.common.exception.BaseException;
+import com.junho.productmgnt.common.exception.BaseExceptionStatus;
 import com.junho.productmgnt.domains.category.CategoryService;
 import com.junho.productmgnt.domains.category.entity.Category;
 import com.junho.productmgnt.domains.product.entity.Product;
@@ -53,7 +55,7 @@ public class ProductService {
         Optional<Product> product = productRepository.findById(productId);
 
         if (!product.isPresent()) {
-            return null; //TODO : add validation
+            throw new BaseException(BaseExceptionStatus.PRODUCT_NOT_FOUND);
         }
 
         return product.get();
