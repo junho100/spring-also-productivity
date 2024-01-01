@@ -9,6 +9,7 @@ import com.junho.productmgnt.domains.auth.model.request.SignInRequest;
 import com.junho.productmgnt.domains.auth.model.request.SignUpRequest;
 import com.junho.productmgnt.domains.auth.model.response.SignInResponse;
 import com.junho.productmgnt.domains.auth.model.response.SignUpResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class AuthController {
     private final BaseResponseService baseResponseService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<BaseResponse<SignUpResponse>> signUp(@RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<BaseResponse<SignUpResponse>> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
         Long userId = authService.signUp(SignUpCommand.of(signUpRequest));
         SignUpResponse signUpResponse = SignUpResponse.builder()
             .userId(userId)
