@@ -19,6 +19,5 @@ public class SignUpRequest {
 
     @NotBlank
     @Size(min=8, max = 64)
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()\\[{}\\]:;',?\\*~$^\\+=<>-])")
     private String password;
 }

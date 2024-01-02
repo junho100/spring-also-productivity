@@ -7,12 +7,15 @@ import com.junho.productmgnt.domains.auth.model.command.SignUpCommand;
 import com.junho.productmgnt.domains.auth.model.dto.SignInDto;
 import com.junho.productmgnt.domains.auth.model.request.SignInRequest;
 import com.junho.productmgnt.domains.auth.model.request.SignUpRequest;
+import com.junho.productmgnt.domains.auth.model.response.GetMyEmailResponse;
 import com.junho.productmgnt.domains.auth.model.response.SignInResponse;
 import com.junho.productmgnt.domains.auth.model.response.SignUpResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +27,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthService authService;
     private final BaseResponseService baseResponseService;
+
+    @GetMapping("/me")
+    public ResponseEntity<BaseResponse<GetMyEmailResponse>> getMyEmail(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        GetMyEmailResponse getMyEmailResponse = GetMyEmailResponse.builder()
+            .email(customUserDetails.getUsername())
+            .build();
+        BaseResponse<GetMyEmailResponse> response = baseResponseService.createSuccessResponse(getMyEmailResponse);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @PostMapping("/sign-up")
     public ResponseEntity<BaseResponse<SignUpResponse>> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
