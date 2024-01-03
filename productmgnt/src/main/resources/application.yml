@@ -1,8 +1,13 @@
-server:
-  port: 9090
-  servlet:
-    context-path: /api
 spring:
+  profiles:
+    active: local
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?serverTimezone=UTC&characterEncoding=UTF-8
     username: ${DB_USERNAME}
@@ -18,9 +23,47 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     database: mysql
+server:
+  port: 9090
+  servlet:
+    context-path: /api
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
 jwt:
   secret: ${JWT_SECRET}
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+      properties:
+        hibernate:
+          format_sql: true
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
+server:
+  servlet:
+    context-path: /api
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
+jwt:
+  secret: /Cuqu8Ncb4SBniPiFevy/QIn0rAw/zuppXmo67OdHY3wkglglWcYCgFflWBkiq4L

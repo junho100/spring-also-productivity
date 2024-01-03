@@ -10,6 +10,9 @@ import com.junho.productmgnt.domains.auth.model.request.SignUpRequest;
 import com.junho.productmgnt.domains.auth.model.response.GetMyEmailResponse;
 import com.junho.productmgnt.domains.auth.model.response.SignInResponse;
 import com.junho.productmgnt.domains.auth.model.response.SignUpResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,6 +32,15 @@ public class AuthController {
     private final BaseResponseService baseResponseService;
 
     @GetMapping("/me")
+    @Operation(summary = "Get my email by jwt token")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Success."),
+        @ApiResponse(
+            responseCode = "401" ,
+            description = "Authentication failed.")
+    })
     public ResponseEntity<BaseResponse<GetMyEmailResponse>> getMyEmail(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         GetMyEmailResponse getMyEmailResponse = GetMyEmailResponse.builder()
             .email(customUserDetails.getUsername())
