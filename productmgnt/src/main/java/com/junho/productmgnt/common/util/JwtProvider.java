@@ -1,6 +1,6 @@
 package com.junho.productmgnt.common.util;
 
-import com.junho.productmgnt.domains.auth.UserDetailsServiceImpl;
+import com.junho.productmgnt.domains.oauth2.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 public class JwtProvider {
     @Value("${jwt.secret}")
     private String secret;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
     private final long exp = 1000L * 60 * 60;
 
     public String createToken(String email) {

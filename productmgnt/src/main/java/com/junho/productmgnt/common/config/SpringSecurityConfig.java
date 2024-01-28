@@ -2,7 +2,11 @@ package com.junho.productmgnt.common.config;
 
 import com.junho.productmgnt.common.exception.AuthenticationEntryPointImpl;
 import com.junho.productmgnt.common.filter.JwtAuthenticationFilter;
+import com.junho.productmgnt.common.security.CookieAuthorizationRequestRepository;
+import com.junho.productmgnt.common.security.OAuth2AuthenticationFailureHandler;
+import com.junho.productmgnt.common.security.OAuth2AuthenticationSuccessHandler;
 import com.junho.productmgnt.common.util.JwtProvider;
+import com.junho.productmgnt.domains.oauth2.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +19,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -24,6 +27,11 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SpringSecurityConfig {
     private final AuthenticationEntryPointImpl authenticationEntryPoint;
     private final JwtProvider jwtProvider;
+    private final CustomUserDetailsService customOAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+    private final CookieAuthorizationRequestRepository cookieAuthorizationRequestRepository;
+
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -49,7 +57,29 @@ public class SpringSecurityConfig {
                 sessionManagement ->
                     sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+            .oauth2Login(oauth2Login ->
+                oauth2Login
+                    .authorizationEndpoint(authorizationEndpoint ->
+                        authorizationEndpoint
+                            .baseUri("/oauth2/authorize")
+                            .authorizationRequestRepository(cookieAuthorizationRequestRepository)
+                    )
+                    .redirectionEndpoint(redirectionEndpoint ->
+                        redirectionEndpoint
+                            .baseUri("/oauth2/callback/*"))
+                    .userInfoEndpoint(userInfoEndpoint ->
+                        userInfoEndpoint
+                            .userService(customOAuth2UserService)
+                    )
+                    .successHandler(oAuth2AuthenticationSuccessHandler)
+                    .failureHandler(oAuth2AuthenticationFailureHandler)
+            )
+            .logout(logout ->
+                logout
+                    .clearAuthentication(true)
+                    .deleteCookies("JSESSIONID")
+            );
         return http.build();
     }
 }
