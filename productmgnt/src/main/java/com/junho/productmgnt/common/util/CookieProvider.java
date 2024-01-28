@@ -3,7 +3,6 @@ package com.junho.productmgnt.common.util;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
@@ -21,13 +20,6 @@ public class CookieProvider {
             }
         }
         return Optional.empty();
-    }
-
-    public static Optional<String> readServletCookie(HttpServletRequest request, String name) {
-        return Arrays.stream(request.getCookies())
-            .filter(cookie -> name.equals(cookie.getName()))
-            .map(Cookie::getValue)
-            .findAny();
     }
 
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {

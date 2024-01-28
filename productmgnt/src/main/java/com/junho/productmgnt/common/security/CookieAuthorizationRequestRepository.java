@@ -13,8 +13,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CookieAuthorizationRequestRepository implements AuthorizationRequestRepository {
     private final CookieProvider cookieProvider;
-
+    // 실제 auth 관련 정보
     public static final String OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME = "oauth2_auth_request";
+    // 클라이언트 최종 리다이렉트 url
     public static final String REDIRECT_URI_PARAM_COOKIE_NAME = "redirect_uri";
     private static final int COOKIE_EXPIRE_SECONDS = 180;
 

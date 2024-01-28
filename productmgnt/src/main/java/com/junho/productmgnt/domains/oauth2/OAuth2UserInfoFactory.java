@@ -1,5 +1,8 @@
 package com.junho.productmgnt.domains.oauth2;
 
+import static com.junho.productmgnt.common.exception.BaseExceptionStatus.INVALID_OAUTH_PROVIDER;
+
+import com.junho.productmgnt.common.exception.BaseException;
 import com.junho.productmgnt.domains.oauth2.kakao.KakaoOAuth2User;
 import java.util.Map;
 
@@ -9,7 +12,7 @@ public class OAuth2UserInfoFactory {
         switch (authProvider) {
             case KAKAO: return new KakaoOAuth2User(attributes);
 
-            default: throw new IllegalArgumentException("Invalid Provider Type.");
+            default: throw new BaseException(INVALID_OAUTH_PROVIDER);
         }
     }
 }

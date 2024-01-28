@@ -2,6 +2,7 @@ package com.junho.productmgnt.common.security;
 
 import static com.junho.productmgnt.common.security.CookieAuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
+import com.junho.productmgnt.common.exception.RedirectUrlNotFoundAuthenticationException;
 import com.junho.productmgnt.common.util.CookieProvider;
 import com.junho.productmgnt.common.util.JwtProvider;
 import jakarta.servlet.http.Cookie;
@@ -12,6 +13,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -41,7 +43,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         Optional<String> redirectUri = cookieProvider.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
             .map(Cookie::getValue);
 
-        String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
+        if (!redirectUri.isPresent()) {
+            throw new RedirectUrlNotFoundAuthenticationException("redirect url not found.");
+        }
+
+        String targetUrl = redirectUri.get();
 
         //JWT 생성
         String token = jwtProvider.createToken(authentication.getName());
