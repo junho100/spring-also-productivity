@@ -1,5 +1,9 @@
 package com.junho.productmgnt.domains.oauth2;
 
+import static com.junho.productmgnt.common.exception.BaseExceptionStatus.OAUTH2_EMAIL_NOT_FOUND;
+import static com.junho.productmgnt.common.exception.BaseExceptionStatus.OAUTH2_USER_EXISTS;
+
+import com.junho.productmgnt.common.exception.BaseException;
 import com.junho.productmgnt.domains.auth.CustomUserDetails;
 import com.junho.productmgnt.domains.user.UserRepository;
 import com.junho.productmgnt.domains.user.entity.User;
@@ -36,22 +40,19 @@ public class CustomUserDetailsService implements OAuth2UserService<OAuth2UserReq
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(authProvider, oAuth2User.getAttributes());
 
         if (!StringUtils.hasText(oAuth2UserInfo.getEmail())) {
-            throw new RuntimeException("Email not found from OAuth2 provider");
+            throw new BaseException(OAUTH2_EMAIL_NOT_FOUND);
         }
 
-        User user = userRepository.findByEmail(oAuth2UserInfo.getEmail()).orElse(null);
+        Optional<User> user = userRepository.findByEmail(oAuth2UserInfo.getEmail());
         //이미 가입된 경우
-        if (user != null) {
-            if (!user.getAuthProvider().equals(authProvider)) {
-                throw new RuntimeException("Email already signed up.");
+        if (user.isPresent()) {
+            if (!user.get().getAuthProvider().equals(authProvider)) {
+                throw new BaseException(OAUTH2_USER_EXISTS);
             }
-            user = updateUser(user, oAuth2UserInfo);
+            return CustomUserDetails.create(updateUser(user.get(), oAuth2UserInfo), oAuth2UserInfo.getAttributes());
         }
         //가입되지 않은 경우
-        else {
-            user = registerUser(authProvider, oAuth2UserInfo);
-        }
-        return CustomUserDetails.create(user, oAuth2UserInfo.getAttributes());
+        return CustomUserDetails.create(registerUser(authProvider, oAuth2UserInfo), oAuth2UserInfo.getAttributes());
     }
 
     private User registerUser(AuthProvider authProvider, OAuth2UserInfo oAuth2UserInfo) {
@@ -70,10 +71,10 @@ public class CustomUserDetailsService implements OAuth2UserService<OAuth2UserReq
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) {
         Optional<User> user = userRepository.findByEmail(email);
         if (!user.isPresent()) {
-            throw new UsernameNotFoundException("auth failed");
+            throw new BaseException(OAUTH2_EMAIL_NOT_FOUND);
         }
 
         return CustomUserDetails.create(user.get());

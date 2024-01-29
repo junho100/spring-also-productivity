@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -37,6 +38,15 @@ public class BaseExceptionAdvice {
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<BaseResponse<Object>> handleAuthInfoException(UsernameNotFoundException exception) {
+        BaseResponse<Object> response = BaseResponse.builder()
+            .isSuccess(false)
+            .message(exception.getMessage())
+            .build();
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(OAuth2AuthenticationException.class)
+    public ResponseEntity<BaseResponse<Object>> handleOAuth2AuthenticationException(OAuth2AuthenticationException exception) {
         BaseResponse<Object> response = BaseResponse.builder()
             .isSuccess(false)
             .message(exception.getMessage())

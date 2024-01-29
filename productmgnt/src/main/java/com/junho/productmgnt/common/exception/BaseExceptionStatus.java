@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum BaseExceptionStatus {
+    OAUTH2_USER_EXISTS(HttpStatus.BAD_REQUEST, "user already exists"),
+    OAUTH2_EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "email not found"),
     INVALID_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, "invalid oauth provider"),
     INVALID_AUTH(HttpStatus.UNAUTHORIZED, "invalid authentication"),
     USER_EXISTS(HttpStatus.BAD_REQUEST, "user already exists"),
