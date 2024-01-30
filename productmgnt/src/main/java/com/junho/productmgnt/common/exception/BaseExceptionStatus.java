@@ -5,8 +5,12 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum BaseExceptionStatus {
+    AUTH_ADMIN_NOT_FOUND(HttpStatus.BAD_REQUEST, "admin not found"),
+    ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "admin not found"),
+    ADMIN_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "admin already exists"),
     OAUTH2_USER_EXISTS(HttpStatus.BAD_REQUEST, "user already exists"),
-    OAUTH2_EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "email not found"),
+    OAUTH2_EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "oauth2 email not found"),
+    USER_EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "user email not found"),
     INVALID_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, "invalid oauth provider"),
     INVALID_AUTH(HttpStatus.UNAUTHORIZED, "invalid authentication"),
     USER_EXISTS(HttpStatus.BAD_REQUEST, "user already exists"),

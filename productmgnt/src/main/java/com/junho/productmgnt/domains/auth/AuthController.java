@@ -2,11 +2,18 @@ package com.junho.productmgnt.domains.auth;
 
 import com.junho.productmgnt.common.response.BaseResponse;
 import com.junho.productmgnt.common.response.BaseResponseService;
+import com.junho.productmgnt.domains.auth.model.command.AdminSignInCommand;
+import com.junho.productmgnt.domains.auth.model.command.AdminSignUpCommand;
 import com.junho.productmgnt.domains.auth.model.command.SignInCommand;
 import com.junho.productmgnt.domains.auth.model.command.SignUpCommand;
+import com.junho.productmgnt.domains.auth.model.dto.AdminSignInDto;
 import com.junho.productmgnt.domains.auth.model.dto.SignInDto;
+import com.junho.productmgnt.domains.auth.model.request.AdminSignInRequest;
+import com.junho.productmgnt.domains.auth.model.request.AdminSignUpRequest;
 import com.junho.productmgnt.domains.auth.model.request.SignInRequest;
 import com.junho.productmgnt.domains.auth.model.request.SignUpRequest;
+import com.junho.productmgnt.domains.auth.model.response.AdminSignInResponse;
+import com.junho.productmgnt.domains.auth.model.response.AdminSignUpResponse;
 import com.junho.productmgnt.domains.auth.model.response.GetMyEmailResponse;
 import com.junho.productmgnt.domains.auth.model.response.SignInResponse;
 import com.junho.productmgnt.domains.auth.model.response.SignUpResponse;
@@ -49,7 +56,7 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/sign-up")
+    @PostMapping("/user/sign-up")
     public ResponseEntity<BaseResponse<SignUpResponse>> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
         Long userId = authService.signUp(SignUpCommand.of(signUpRequest));
         SignUpResponse signUpResponse = SignUpResponse.builder()
@@ -59,7 +66,7 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PostMapping("/sign-in")
+    @PostMapping("/user/sign-in")
     public ResponseEntity<BaseResponse<SignInResponse>> signIn(@RequestBody SignInRequest signInRequest) {
         SignInCommand signInCommand = SignInCommand.of(signInRequest);
         SignInDto signInDto = authService.signIn(signInCommand);
@@ -70,5 +77,28 @@ public class AuthController {
             .build();
         BaseResponse<SignInResponse> response = baseResponseService.createSuccessResponse(signInResponse);
         return new ResponseEntity<BaseResponse<SignInResponse>>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/admin/sign-up")
+    public ResponseEntity<BaseResponse<AdminSignUpResponse>> adminSignUp(@RequestBody @Valid AdminSignUpRequest adminSignUpRequest) {
+        Long adminId = authService.adminSignUp(AdminSignUpCommand.of(adminSignUpRequest));
+        AdminSignUpResponse adminSignUpResponse = AdminSignUpResponse.builder()
+            .adminId(adminId)
+            .build();
+        BaseResponse<AdminSignUpResponse> response = baseResponseService.createSuccessResponse(adminSignUpResponse);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/admin/sign-in")
+    public ResponseEntity<BaseResponse<AdminSignInResponse>> adminSignIn(@RequestBody AdminSignInRequest adminSignInRequest) {
+        AdminSignInCommand adminSignInCommand = AdminSignInCommand.of(adminSignInRequest);
+        AdminSignInDto adminSignInDto = authService.adminSignIn(adminSignInCommand);
+
+        AdminSignInResponse adminSignInResponse = AdminSignInResponse.builder()
+            .token(adminSignInDto.getToken())
+            .adminId(adminSignInDto.getAdminId())
+            .build();
+        BaseResponse<AdminSignInResponse> response = baseResponseService.createSuccessResponse(adminSignInResponse);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

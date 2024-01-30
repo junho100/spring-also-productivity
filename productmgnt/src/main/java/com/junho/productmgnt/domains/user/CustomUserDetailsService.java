@@ -1,11 +1,14 @@
-package com.junho.productmgnt.domains.oauth2;
+package com.junho.productmgnt.domains.user;
 
 import static com.junho.productmgnt.common.exception.BaseExceptionStatus.OAUTH2_EMAIL_NOT_FOUND;
 import static com.junho.productmgnt.common.exception.BaseExceptionStatus.OAUTH2_USER_EXISTS;
+import static com.junho.productmgnt.common.exception.BaseExceptionStatus.USER_EMAIL_NOT_FOUND;
 
 import com.junho.productmgnt.common.exception.BaseException;
 import com.junho.productmgnt.domains.auth.CustomUserDetails;
-import com.junho.productmgnt.domains.user.UserRepository;
+import com.junho.productmgnt.domains.oauth2.AuthProvider;
+import com.junho.productmgnt.domains.oauth2.OAuth2UserInfo;
+import com.junho.productmgnt.domains.oauth2.OAuth2UserInfoFactory;
 import com.junho.productmgnt.domains.user.entity.User;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +20,10 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements OAuth2UserService<OAuth2UserRequest, OAuth2User>,
     UserDetailsService {
@@ -71,10 +74,10 @@ public class CustomUserDetailsService implements OAuth2UserService<OAuth2UserReq
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException{
         Optional<User> user = userRepository.findByEmail(email);
         if (!user.isPresent()) {
-            throw new BaseException(OAUTH2_EMAIL_NOT_FOUND);
+            throw new UsernameNotFoundException("user not found!!!");
         }
 
         return CustomUserDetails.create(user.get());

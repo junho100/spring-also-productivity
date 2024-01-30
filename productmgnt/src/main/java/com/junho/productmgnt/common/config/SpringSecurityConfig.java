@@ -3,10 +3,11 @@ package com.junho.productmgnt.common.config;
 import com.junho.productmgnt.common.exception.AuthenticationEntryPointImpl;
 import com.junho.productmgnt.common.filter.JwtAuthenticationFilter;
 import com.junho.productmgnt.common.security.CookieAuthorizationRequestRepository;
+import com.junho.productmgnt.common.security.CustomAccessDeniedHandler;
 import com.junho.productmgnt.common.security.OAuth2AuthenticationFailureHandler;
 import com.junho.productmgnt.common.security.OAuth2AuthenticationSuccessHandler;
 import com.junho.productmgnt.common.util.JwtProvider;
-import com.junho.productmgnt.domains.oauth2.CustomUserDetailsService;
+import com.junho.productmgnt.domains.user.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +32,7 @@ public class SpringSecurityConfig {
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final CookieAuthorizationRequestRepository cookieAuthorizationRequestRepository;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -48,10 +50,12 @@ public class SpringSecurityConfig {
                     .requestMatchers(HttpMethod.POST,"/products/**").authenticated()
                     .requestMatchers(HttpMethod.PUT, "/products/**").authenticated()
                     .requestMatchers("/auth/me").authenticated()
+                    .requestMatchers("/product-audits/**").hasRole("ADMIN")
                     .anyRequest().permitAll()
             ))
             .exceptionHandling(exceptionHandling -> exceptionHandling
                 .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler)
             )
             .sessionManagement(
                 sessionManagement ->
