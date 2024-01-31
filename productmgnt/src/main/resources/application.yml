@@ -43,8 +43,6 @@ spring:
               authorization-grant-type: authorization_code
 server:
   port: 9090
-  servlet:
-    context-path: /api
 logging:
   level:
     org.hibernate.SQL: debug
