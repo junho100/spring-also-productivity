@@ -47,10 +47,10 @@ public class SpringSecurityConfig {
             .cors(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(((authorizeRequests) ->
                 authorizeRequests
-                    .requestMatchers(HttpMethod.POST,"/products/**").authenticated()
-                    .requestMatchers(HttpMethod.PUT, "/products/**").authenticated()
-                    .requestMatchers("/auth/me").authenticated()
-                    .requestMatchers("/product-audits/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST,"/api/products/**").authenticated()
+                    .requestMatchers(HttpMethod.PUT, "/api/products/**").authenticated()
+                    .requestMatchers("/api/auth/me").authenticated()
+                    .requestMatchers("/api/product-audits/**").hasRole("ADMIN")
                     .anyRequest().permitAll()
             ))
             .exceptionHandling(exceptionHandling -> exceptionHandling
@@ -66,12 +66,12 @@ public class SpringSecurityConfig {
                 oauth2Login
                     .authorizationEndpoint(authorizationEndpoint ->
                         authorizationEndpoint
-                            .baseUri("/oauth2/authorize")
+                            .baseUri("/api/oauth2/authorize")
                             .authorizationRequestRepository(cookieAuthorizationRequestRepository)
                     )
                     .redirectionEndpoint(redirectionEndpoint ->
                         redirectionEndpoint
-                            .baseUri("/oauth2/callback/*"))
+                            .baseUri("/api/oauth2/callback/*"))
                     .userInfoEndpoint(userInfoEndpoint ->
                         userInfoEndpoint
                             .userService(customOAuth2UserService)
