@@ -13,7 +13,7 @@ import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.Getter;
 
-@Entity
+@Entity(name = "product_audits")
 @Getter
 @IdClass(ProductAuditId.class)
 public class ProductAudit {

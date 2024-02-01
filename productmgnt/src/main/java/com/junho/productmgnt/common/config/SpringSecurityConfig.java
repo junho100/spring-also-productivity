@@ -1,6 +1,7 @@
 package com.junho.productmgnt.common.config;
 
 import com.junho.productmgnt.common.exception.AuthenticationEntryPointImpl;
+import com.junho.productmgnt.common.filter.AuthenticationExceptionFilter;
 import com.junho.productmgnt.common.filter.JwtAuthenticationFilter;
 import com.junho.productmgnt.common.security.CookieAuthorizationRequestRepository;
 import com.junho.productmgnt.common.security.CustomAccessDeniedHandler;
@@ -33,6 +34,7 @@ public class SpringSecurityConfig {
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final CookieAuthorizationRequestRepository cookieAuthorizationRequestRepository;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final AuthenticationExceptionFilter authenticationExceptionFilter;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -62,6 +64,7 @@ public class SpringSecurityConfig {
                     sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(authenticationExceptionFilter, JwtAuthenticationFilter.class)
             .oauth2Login(oauth2Login ->
                 oauth2Login
                     .authorizationEndpoint(authorizationEndpoint ->
