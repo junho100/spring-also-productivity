@@ -1,7 +1,10 @@
 package com.junho.productmgnt.domains.product;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.junho.productmgnt.common.response.BaseResponse;
 import com.junho.productmgnt.common.response.BaseResponseService;
+import com.junho.productmgnt.domains.auth.CustomUserDetails;
+import com.junho.productmgnt.domains.fcm.FcmService;
 import com.junho.productmgnt.domains.product.entity.Product;
 import com.junho.productmgnt.domains.product.model.command.CreateProductCommand;
 import com.junho.productmgnt.domains.product.model.command.UpdateProductCommand;
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,9 +37,10 @@ public class ProductController {
     private final ProductService productService;
     private final BaseResponseService baseResponseService;
     private final ProductAuditService productAuditService;
+    private final FcmService fcmService;
 
     @PostMapping
-    public ResponseEntity<BaseResponse<CreateProductResponse>> createProduct(@RequestBody CreateProductRequest createProductRequest) {
+    public ResponseEntity<BaseResponse<CreateProductResponse>> createProduct(@RequestBody CreateProductRequest createProductRequest, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         CreateProductCommand createProductCommand = CreateProductCommand.of(createProductRequest);
 
         Product product = productService.createProduct(createProductCommand);
@@ -44,6 +49,8 @@ public class ProductController {
             .productId(product.getProductId())
             .build();
         BaseResponse<CreateProductResponse> response = baseResponseService.createSuccessResponse(createProductResponse);
+
+        fcmService.publishCreateProductTopic(customUserDetails.getUser().getUserId());
 
         return new ResponseEntity<BaseResponse<CreateProductResponse>>(response, HttpStatus.CREATED);
     }

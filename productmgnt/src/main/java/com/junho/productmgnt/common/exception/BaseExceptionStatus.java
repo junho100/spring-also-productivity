@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum BaseExceptionStatus {
+    FIREBASE_MESSAGING_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "firebase messaging exception"),
     AUTH_ADMIN_NOT_FOUND(HttpStatus.BAD_REQUEST, "admin not found"),
     ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "admin not found"),
     ADMIN_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "admin already exists"),
